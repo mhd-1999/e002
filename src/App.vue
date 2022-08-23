@@ -6,6 +6,7 @@
 
 <script>
 import DropZone from "./components/CompUploadFile.vue";
+
 export default {
   name: "App",
   components: {
