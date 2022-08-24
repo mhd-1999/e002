@@ -8,10 +8,9 @@
     @dragover.prevent
     :class="{'active-dropzone' : isActive ,'active-err': isOver}"
   >
-    <div class="upload-logo" @click="handleUpload" v-show="!isOver">
+    <div class="upload-logo" @click="handleUpload">
       <img src="../assets/img/upload.png" alt="" />
     </div>
-    <p class="err-mess" v-show="isOver">Choose file no more than 10mb</p>
     <div class="upload-content">
       <h3>Drag and drop files</h3>
       <form >
@@ -26,33 +25,58 @@
       </form>
     </div>
 </div>
-<p v-for="(file, index) in data" :key="index">{{ file.name }}||{{file.type}}||{{file.size}}</p>
+<p class="err-mess" v-show="isOver">The maximum file size  is 10 MB</p>
+<!-- <p v-for="(file, index) in data" :key="index">{{ file.name }}||{{file.type}}||{{file.size}}</p> -->
+<div class="file-list">
+  
+  <file-item  
+    v-for="(file,index) in data" 
+    :key="index" 
+    :fileName="file.name" 
+    :fileSize="parseInt((file.size/1024))"
+    :fileType="file.type">
+
+    <img class="close-icon" 
+         :src="closeIcon" alt="" 
+         @click="handleDelete(index)">
+  </file-item>
+</div>
   </div>
 </template>
 
 <script>
+
 import {ref,uploadBytes } from 'firebase/storage';
 import {storage} from '../firebase.config';
+import FileItem from './CompFileItem.vue';
+import excelIcon from '../assets/img/excel.png';
+import closeIcon from '../assets/img/close-circle.png';
 export default {
   name: "DropZone",
+  components:{
+    FileItem:FileItem,
+  },
   data() {
     return {
       data: [],
       isNull:false,
       isOver:false,
       isActive: false,
+      excelIcon:excelIcon,
+      closeIcon:closeIcon,
     };
   },
+
   methods: {
     //check theChange 
     handleChangeFiles(e) {
       let files=e.target.files[0];
-      if(files.size>1000000){
+      if(files.size>10000000){
         this.isOver=true;
       }else{
         this.data.push(files);
         this.isOver=false;
-        console.log('done');
+        console.log(files.type);
       }
       // 
       // console.log(this.data);
@@ -66,8 +90,6 @@ export default {
         this.data.push(files);
         this.isOver=false;
       }
-     
-      
     },
 
     handleUpload(){
@@ -84,6 +106,9 @@ export default {
       })
     },
 
+    handleDelete(index){
+     this.data.splice(index,1);
+    },
 
   },
 
@@ -91,11 +116,13 @@ export default {
 </script>
 
 <style scoped>
+.upload{
+  margin:100px auto;
+  width: 842px;
+}
 #drop-zone {
   display: flex;
   flex-wrap: wrap;
-  width: 842px;
-  margin:100px auto;
   justify-content: center;
   align-items: center;
   background: #f8f8f8;
@@ -103,19 +130,22 @@ export default {
   border-radius: 7px;
   padding-bottom: 60px;
 }
+h3{
+  margin-bottom:0;
+  margin-top:25px;
+}
 .active-dropzone {
   opacity: 0.5;
   border: 1px dashed #000000 !important;
-  background: chocolate !important;
 }
 .active-err{
   border:1px solid red !important;
 }
 .err-mess{
   width: 100%;
-  padding-top:65px;
+  padding-top:7px;
   margin:0;
-  text-align: center;
+  text-align: start;
   color: red;
 }
 .upload-logo {
@@ -138,5 +168,9 @@ export default {
 }
 .upload-content label {
   text-decoration: underline;
+}
+.file-list{
+  display: flex;
+  margin-top: 33px;
 }
 </style>
