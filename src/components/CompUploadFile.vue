@@ -50,7 +50,6 @@
 import { ref, uploadBytes } from "firebase/storage";
 import { storage } from "../firebase.config";
 import FileItem from "./CompFileItem.vue";
-import excelIcon from "../assets/img/excel.png";
 import closeIcon from "../assets/img/close-circle.png";
 export default {
   name: "DropZone",
@@ -81,8 +80,6 @@ export default {
         this.isOver = false;
         console.log(files.type);
       }
-      //
-      // console.log(this.data);
     },
 
     handleDragFiles(e) {
